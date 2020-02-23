@@ -1,4 +1,4 @@
-function Character (name, level, Pclass, race, STR, DEX, CON, INT, WIS, CHA) {
+function Character (name, level, Pclass, race, STR, DEX, CON, INT, WIS, CHA){
     this.name = name;
     this.level = level;
     this.class = Pclass;
@@ -9,8 +9,35 @@ function Character (name, level, Pclass, race, STR, DEX, CON, INT, WIS, CHA) {
     this.INT = INT
     this.WIS = WIS
     this.CHA = CHA
+
+    // Xandra Equipment
+    // Belt of Incredible Dexterity +4
+    // Mithral Chain Shirt + 2
+    // Bombchucker
+
+    // zero out a bunch of variable that might become formulas later
+    ArmourBonus = 4 + 2  // Magic Mithral Chain Shirt + 2  (Okay,+2 Armour Bonus, and Mithral meant I get to use my full DexModifier
+    MaxDexDueToArmor = 4 + 2 + 0; // chainshirt + Mithral + magic
+    ShieldBonus= 0
+    SizeModifier = 0
+    NaturalModifier= 0
+    DeflectionModifier= 0
+    MiscModifier= 0
+
+    ArmorDexModifier = Math.min(MaxDexDueToArmor, this.AbilityModifier(this.DEX))
+    this.INITIATIVE = this.AbilityModifier(this.DEX) + MiscModifier
+    this.AC = 10 + ArmourBonus + ShieldBonus + ArmorDexModifier + SizeModifier + NaturalModifier + DeflectionModifier + MiscModifier
+    this.Touch = this.AC - ArmourBonus - ShieldBonus - NaturalModifier
+    this.FlatFooted = this.AC - this.AbilityModifier(this.DEX)
+ 
 }
 
+
+    
+
+
+
+// This is where I put all my prototype functions
 Character.prototype = {
     constructor: Character,
 
@@ -51,5 +78,6 @@ Xandra = new Character ("Xandra", 8, "Alchemist", "Tiefling" , 10, 22, 14, 19, 1
 console.log(Xandra.name)
 console.log(Xandra.level)
 console.log(Xandra.class)
+console.log(Xandra.AC)
 
 console.log(Xandra.BonusSpells(Xandra.INT))
