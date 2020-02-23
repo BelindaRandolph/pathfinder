@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo '' >> temp0.js 
+find ./bin -name \*.js -exec cat {} >> temp0.js \;
+
+mv temp0.js bot.js
