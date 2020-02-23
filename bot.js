@@ -17,10 +17,12 @@ SessionString = '{"Character":"Xandra","Level":8,"AttackBonus":13,"AttackDamage"
 
 var mystats = JSON.parse(SessionString)
 
-function AbilityModifiersAndBonusSpells (AbilityScore):
-    Modifier = MathFloor((AbilityScore - 10) / 2)
+function AbilityModifier (AbilityScore) { return MathFloor((AbilityScore - 10) / 2) }
+
+function BonusSpells (AbilityScore)
+{
     let BonusSpells = [0,0,0,0,0, 0,0,0,0]
-    else if (mystats.Level < 14) { BonusSpells = [0,1,0,0,0,0,0,0,0,0] }
+    if (mystats.Level < 14) { BonusSpells = [0,1,0,0,0,0,0,0,0,0] }
     else if (mystats.Level < 16) { BonusSpells = [0,1,1,0,0,0,0,0,0,0] }
     else if (mystats.Level < 18) { BonusSpells = [0,1,1,1,0,0,0,0,0,0] }
     else if (mystats.Level < 20) { BonusSpells = [0,1,1,1,1,0,0,0,0,0] }
@@ -38,7 +40,8 @@ function AbilityModifiersAndBonusSpells (AbilityScore):
     else if (mystats.Level < 44) { BonusSpells = [0,4,4,4,4,3,3,3,3,2] }
     else if (mystats.Level < 46) { BonusSpells = [0,5,4,4,4,4,3,3,3,3] }
 
-return [AbilityModify, BonusSpellArray]
+return BonusSpellArray
+}
 
 function GetExtractsPerDay () {
     let ExtractsPerDay = [0,0,0,0,0, 0,0]
