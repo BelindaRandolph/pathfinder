@@ -28,9 +28,13 @@ Pclass.prototype = {
         return BaseAttackBonus
 
     },
-    FortitudeSave:function (level)  { return Math.floor (level/2) + 2 },
-    ReflexSave:function (level)  { return Math.floor (level/2) + 2 },
-    WillSave:function (level)  { return Math.floor (level / 3)}
+    FortitudeBaseSave:function (level)  { return Math.floor (level/2) + 2 },
+    ReflexBaseSave:function (level)  { return Math.floor (level/2) + 2 },
+    WillBaseSave:function (level)  { return Math.floor (level / 3)}
+
+    // Still need FortitudeSave, ReflexSave, and WillSave which are function of
+    // above and AbilityModifiers (CONmod, DEXmod, WISmod)
+    // and these are implemented based on my character traits.
 
 }
 
@@ -40,8 +44,8 @@ Alchemist = new Pclass ("Xandra", 8 )
 
 console.log(Alchemist.name)
 console.log(Alchemist.level)
-console.log('F = ' + Alchemist.FortitudeSave(Alchemist.level))
-console.log('R = ' + Alchemist.ReflexSave(Alchemist.level))
-console.log('W = ' + Alchemist.WillSave(Alchemist.level))
-console.log('W = ' + Alchemist.BaseAttackBonus(Alchemist.level))
+console.log('F = ' + Alchemist.FortitudeBaseSave(Alchemist.level))
+console.log('R = ' + Alchemist.ReflexBaseSave(Alchemist.level))
+console.log('W = ' + Alchemist.WillBaseSave(Alchemist.level))
+console.log('BaseAttackBonus = ' + Alchemist.BaseAttackBonus(Alchemist.level))
 
