@@ -4,16 +4,25 @@ function Alchemist(level) {
     this.GoodBadFortitude = 1
     this.GoodBadReflex= 1
     this.GoodBadWill= 0
-    this.ExtractsPerDay = this.GetExtractsPerDay(this.level)
+    this.ExtractsPerDay = this.GetExtractsPerDay(level)
     this.NumAttackBombDice = Math.floor(level/2)
 
     Pclass.call (this, "Alchemist", level,  this.BaseMod, this.GoodBadFortitude, this.GoodBadReflex, this.GoodBadWill) 
+    this.Special (level);
+    this.Discoveries = []
 
 }
 
 // This is where I put all my prototype functions
+//
+Alchemist.prototype.addDiscovery = function (discoverystr) {
+    if ( this.Discoveries.length < this.NumDiscovery ) {
+        this.Discoveries.push (discoverystr)
+    }
+}  
+ 
 Alchemist.prototype.Special = function ( level ) {
-    Feats = [ ] 
+    // Feats = [ ] This was initialized in Pclass
     Features = [ ]
     NumDiscovery = Math.floor (level/2)
     PoisonResistance = 0
@@ -49,12 +58,12 @@ Alchemist.prototype.Special = function ( level ) {
                 Features.push ("Poison Use")
             case 1:
                 Features.push ("Alchemy")
-                Feats.push ("Brew Potion")
+                this.Feats.push ("Brew Potion")
                 // skipped Mutagen becase it should be Congnatgen because I am d ArchType Mind Chemist
-                Feats.push ("Throw Anything")
+                this.Feats.push ("Throw Anything")
                 break;
     }
-    this.Feats = Feats
+    // this.Feats = Feats
     this.Features = Features
     this.NumDiscovery = NumDiscovery
     this.PoisonResistance = PoisonResistance
@@ -62,6 +71,7 @@ Alchemist.prototype.Special = function ( level ) {
     
 // Alchemist.prototype = new Pclass();
 Alchemist.prototype.BaseSave = Pclass.BaseSave;
+Alchemist.prototype.addFeat = Pclass.addFeat;
 // Alchemist.prototype = new Pclass();
 // Alchemist.prototype.constructor = Pclass;
 Alchemist.prototype.GetExtractsPerDay = function ( level  ) 
@@ -137,6 +147,19 @@ Alchemist.prototype.GetExtractsPerDay = function ( level  )
 
 
 me = new Alchemist (8 )
+me.addFeat("Point Blank Shot")
+me.addFeat("Precise Shot")
+me.addFeat("Skill Focus (Linguistics)")
+me.addFeat("Orator")
+// Free Extracts [ 'Swift Poisening', 'Swift Alchemy', 'Poison Use', 'Alchemy' ]
+// Free Feats [ 'Brew Potion', 'Throw Anything' ]
+me.addDiscovery ("Infusion")
+me.addDiscovery ("Precise Bombs")
+me.addDiscovery ("Smoke Bombs")
+me.addDiscovery ("Fast Bombs")
+// Calculate my AttackBonus based on Base Attack Bonus + Dex Mod + PointBlankShot
+// NumFeats = Math.ceiling (level/2)
+
 
 console.log(me.name)
 console.log(me.level)
@@ -146,6 +169,10 @@ console.log('W = ' + me.WillBaseSave)
 console.log('BaseAttackBonus = ' + me.BaseAttackBonus)
 console.log(me.Features)
 console.log(me.Feats)
+console.log(me.Discoveries)
+console.log("NumFeats is " + me.NumFeats)
 console.log("NumDiscovery is " + me.NumDiscovery)
 console.log("PoisonResistance is " + me.PoisonResistance)
+console.log("Extracts is " + me.ExtractsPerDay)
+console.log("Discoveries " + me.Discoveries)
 
