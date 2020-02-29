@@ -3,7 +3,7 @@ var logger = require('winston');
 var auth = require('./auth.json');
 
 // Character Variables
-// var AttackBonus = 13
+// var AttackBonus = 13 = Base Attack Bonus + DexMod (6) + 1 (Point Blank Shot)
 // var AttackDamage = 9
 // var Character = 'Xandra'
 // var HitPoints = 68
@@ -16,6 +16,21 @@ var auth = require('./auth.json');
 SessionString = '{"Character":"Xandra","Level":8,"AttackBonus":13,"AttackDamage":9,"HitPoints":68,"MaxHitPoints":68,"MaxBombs":12,"NumBombsRemaining":12,"STR":10,"DEX":22,"CON":14,"INT":19,"WIS":12,"CHA":5,"STRmod":0,"DEXmod":6,"CONmod":2,"INTmod":4,"WISmod":1,"CHAmod":-3}'
 
 var mystats = JSON.parse(SessionString)
+
+function skillroll (cid, cmd) {
+    var factor = 1
+    knowledges = [  "arcana", "dungeoneering", "engineering", "geography", "history", "local", "nature", "nobility", "planes", "religion" ]
+    if (knowledges.includes (cmd)) {
+        cmd = "Knowledge (" + cmd + ")"
+        factor = 2
+    }
+    foundskill = me.findSkill(cmd)
+    Bonus = factor*me.getAbilityModifier(foundskill[MODTYPE]) + foundskill[MISCMOD] + foundskill[RANKS]
+    var Roll = DiceParser(1,20,Bonus)
+    var msg = Roll[0];
+    var val = Roll[1];
+    botmsg (cid, msg + ' # ' + mystats.Character + ' ' + 'Skill Roll for ' + cmd)
+}
 
 function AbilityModifier (AbilityScore) { return MathFloor((AbilityScore - 10) / 2) }
 
@@ -43,51 +58,6 @@ function BonusSpells (AbilityScore)
 return BonusSpellArray
 }
 
-function GetExtractsPerDay () {
-    let ExtractsPerDay = [0,0,0,0,0, 0,0]
-
-    if (mystats.Level == 1) { Level1Extracts = 1 }
-    else if (mystats.Level == 2) { Level1Extracts = 2 }
-    else if (mystats.Level < 5) { Level1Extracts = 3 }
-    else if (mystats.Level < 8) { Level1Extracts = 4 }
-    else { Level1Extracts = 5 }
-
-    if (mystats.Level < 4) { Level2Extracts = 0 }
-    else if (mystats.Level == 4) { Level2Extracts = 1 }
-    else if (mystats.Level == 5) { Level2Extracts = 2 }
-    else if (mystats.Level < 8) { Level2Extracts = 3 }
-    else if (mystats.Level < 12) { Level2Extracts = 4 }
-    else { Level2Extracts = 5 }
-    
-    if (mystats.Level < 8) { Level3Extracts = 0 }
-    else if (mystats.Level == 7) { Level3Extracts = 1 }
-    else if (mystats.Level == 8) { Level3Extracts = 2 }
-    else if (mystats.Level <11 ) { Level3Extracts = 3 }
-    else if (mystats.Level < 15) { Level3Extracts = 4 }
-    else { Level3Extracts = 5 }
-    
-    if (mystats.Level < 10) { Level4Extracts = 0 }
-    else if (mystats.Level == 11) { Level4Extracts = 1 }
-    else if (mystats.Level == 12) { Level4Extracts = 2 }
-    else if (mystats.Level <14 ) { Level4Extracts = 3 }
-    else if (mystats.Level < 18) { Level4Extracts = 4 }
-    else { Level4Extracts = 5 }
-
-    if (mystats.Level < 13) { Level5Extracts = 0 }
-    else if (mystats.Level == 13) { Level5Extracts = 1 }
-    else if (mystats.Level == 14) { Level5Extracts = 2 }
-    else if (mystats.Level <17 ) { Level5Extracts = 3 }
-    else if (mystats.Level < 19) { Level5Extracts = 4 }
-    else { Level5Extracts = 5 }
-
-    if (mystats.Level < 16) { Level6Extracts = 0 }
-    else if (mystats.Level == 16) { Level6Extracts = 1 }
-    else if (mystats.Level == 17) { Level6Extracts = 2 }
-    else if (mystats.Level == 18 ) { Level6Extracts = 3 }
-    else if (mystats.Level ==  19) { Level6Extracts = 4 }
-    else { Level6Extracts = 5 }
-}
-
 
 // 
 const sleep = (milliseconds) => {
@@ -104,32 +74,6 @@ function Statistics (cid) {
         + '\n   MaxBombs : ' + mystats.MaxBombs
         + '\n   HitPoints : ' + mystats.HitPoints
     botmsg(cid, msg)
-}
-
-function Statistics2 (cid) {
-    botmsg (cid,mystats.Character + ', Level= ' + mystats.Level + ', has the following statistics: ')
-    var little = 800
-    sleep(little).then(() => {  
-        botmsg (cid,'   AttackBonus : ' + mystats.AttackBonus)
-        sleep(little).then(() => {  
-            botmsg (cid,'   MaxHitPoints : ' + mystats.MaxHitPoints )
-            sleep(little).then(() => {  
-                botmsg (cid,'   Constitution : ' + mystats.CON)
-                sleep(little).then(() => {  
-                    botmsg (cid,'   AttackDamage  : ' + mystats.AttackDamage)
-                    sleep(little).then(() => {  
-                        botmsg (cid,'   Bombs Remaining : ' + mystats.NumBombsRemaining)
-                        sleep(little).then(() => {  
-                            botmsg (cid,'   MaxBombs : ' + mystats.MaxBombs)
-                            sleep(little).then(() => {  
-                                botmsg (cid,'   HitPoints : ' + mystats.HitPoints)
-                            })
-                        })
-                    })
-                })
-            })
-        })
-    })
 }
 
 function ModBombs (deltax) { 
@@ -250,6 +194,44 @@ bot.on('message', function (user, userID, cid, message, evt) {
        
         args = args.splice(1);
         switch(cmd) {
+
+            case 'Acrobatics': 
+            case 'Appraise': 
+            case 'Bluff': 
+            case 'Climb': 
+            case 'Craft': 
+            case 'Diplomacy': 
+            case 'Disable Device': 
+            case 'Disguise': 
+            case 'Escape Artist': 
+            case 'Fly': 
+            case 'Handle Animal': 
+            case 'Heal': 
+            case 'Intimidate': 
+            case 'arcana': 
+            case 'dungeoneering': 
+            case 'engineering': 
+            case 'geography': 
+            case 'history': 
+            case 'local': 
+            case 'nature': 
+            case 'nobility': 
+            case 'planes': 
+            case 'religion': 
+            case 'Linguistics': 
+            case 'Perception': 
+            case 'Perform': 
+            case 'Profession': 
+            case 'Ride': 
+            case 'Sense Motive': 
+            case 'Sleight of Hand': 
+            case 'Spellcraft': 
+            case 'Stealth': 
+            case 'Survival': 
+            case 'Swim': 
+                skillroll (cid, cmd)
+            break;
+
             case 'startday':
                 // In order to create a bomb, the alchemist must use a small vial containing an ounce of liquid catalyst—the alchemist can create this liquid catalyst from small amounts of chemicals from an alchemy lab, and these supplies can be readily refilled in the same manner as a spellcaster’s component pouch. Most alchemists create a number of catalyst vials at the start of the day equal to the total number of bombs they can create in that day—once created, a catalyst vial remains usable by the alchemist for years
                 mystats.NumBombsRemaining = mystats.MaxBombs
@@ -293,6 +275,7 @@ bot.on('message', function (user, userID, cid, message, evt) {
                     ModBombs (-2)
                     
                     var Roll = DiceParser(1,20,mystats.AttackBonus)
+                    var Roll = DiceParser(4,6,me.AttackBonus[0])
                     var msg = Roll[0];
                     var val = Roll[1];
                     botmsg (cid,msg + ' # ' + mystats.Character + ' attack with Fast Bomb (1st)')
@@ -304,6 +287,7 @@ bot.on('message', function (user, userID, cid, message, evt) {
                         sleep(2000).then(() => {
                             FastAttackBonus = mystats.AttackBonus - 5
                             var Roll = DiceParser(1,20,mystats.AttackBonus)
+                            var Roll = DiceParser(4,6,me.AttackBonus[1])
                             var msg = Roll[0];
                             var val = Roll[1];
                             botmsg (cid,msg + ' # ' + mystats.Character + ' attack with Fast Bomb (2nd)')
@@ -328,6 +312,7 @@ bot.on('message', function (user, userID, cid, message, evt) {
                     botmsg (cid,msg + ' # ' + mystats.Character + ' attack with Precise Bomb')
                     sleep(2000).then(() => {  
                         var Roll = DiceParser(4,6,mystats.AttackDamage)
+                        var Roll = DiceParser(4,6,me.AttackBonus[0])
                         var msg = Roll[0];
                         var val = Roll[1];
                         botmsg (cid,msg + ' # Damage Roll for ' + mystats.Character + ' Precise Bomb')
