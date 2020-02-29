@@ -1,6 +1,13 @@
 #!/bin/bash
 
 echo '' >> temp0.js 
-find ./bin -name \*.js -exec cat {} >> temp0.js \;
+
+cat bin/skills.js >> temp0.js
+cat bin/Pclass.js >> temp0.js		
+cat bin/Alchemist.js >> temp0.js 
+cat bin/bot.js >> temp0.js
+
+
+#find ./bin -name \*.js -exec cat {} >> temp0.js \;
 
 mv temp0.js bot.js
